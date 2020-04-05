@@ -1,4 +1,4 @@
-% This function containts full information and implementations of the benchmark 
+% This function containts full information and implementations of the benchmark
 % functions in Table 1, Table 2, and Table 3 in the paper
 
 % lb is the lower bound: lb=[lb_1,lb_2,...,lb_d]
@@ -127,25 +127,25 @@ switch F
         fobj = @F20;
         lb=0;
         ub=1;
-        dim=6;     
+        dim=6;
         
     case 'F21'
         fobj = @F21;
         lb=0;
         ub=10;
-        dim=4;    
+        dim=4;
         
     case 'F22'
         fobj = @F22;
         lb=0;
         ub=10;
-        dim=4;    
+        dim=4;
         
     case 'F23'
         fobj = @F23;
         lb=0;
         ub=10;
-        dim=4;            
+        dim=4;
 end
 
 end
@@ -230,7 +230,7 @@ end
 function o = F12(x)
 dim=size(x,2);
 o=(pi/dim)*(10*((sin(pi*(1+(x(1)+1)/4)))^2)+sum((((x(1:dim-1)+1)./4).^2).*...
-(1+10.*((sin(pi.*(1+(x(2:dim)+1)./4)))).^2))+((x(dim)+1)/4)^2)+sum(Ufun(x,10,100,4));
+    (1+10.*((sin(pi.*(1+(x(2:dim)+1)./4)))).^2))+((x(dim)+1)/4)^2)+sum(Ufun(x,10,100,4));
 end
 
 % F13
@@ -238,14 +238,14 @@ end
 function o = F13(x)
 dim=size(x,2);
 o=.1*((sin(3*pi*x(1)))^2+sum((x(1:dim-1)-1).^2.*(1+(sin(3.*pi.*x(2:dim))).^2))+...
-((x(dim)-1)^2)*(1+(sin(2*pi*x(dim)))^2))+sum(Ufun(x,5,100,4));
+    ((x(dim)-1)^2)*(1+(sin(2*pi*x(dim)))^2))+sum(Ufun(x,5,100,4));
 end
 
 % F14
 
 function o = F14(x)
 aS=[-32 -16 0 16 32 -32 -16 0 16 32 -32 -16 0 16 32 -32 -16 0 16 32 -32 -16 0 16 32;,...
--32 -32 -32 -32 -32 -16 -16 -16 -16 -16 0 0 0 0 0 16 16 16 16 16 32 32 32 32 32];
+    -32 -32 -32 -32 -32 -16 -16 -16 -16 -16 0 0 0 0 0 16 16 16 16 16 32 32 32 32 32];
 
 for j=1:25
     bS(j)=sum((x'-aS(:,j)).^6);
@@ -297,7 +297,7 @@ function o = F20(x)
 aH=[10 3 17 3.5 1.7 8;.05 10 17 .1 8 14;3 3.5 1.7 10 17 8;17 8 .05 10 .1 14];
 cH=[1 1.2 3 3.2];
 pH=[.1312 .1696 .5569 .0124 .8283 .5886;.2329 .4135 .8307 .3736 .1004 .9991;...
-.2348 .1415 .3522 .2883 .3047 .6650;.4047 .8828 .8732 .5743 .1091 .0381];
+    .2348 .1415 .3522 .2883 .3047 .6650;.4047 .8828 .8732 .5743 .1091 .0381];
 o=0;
 for i=1:4
     o=o-cH(i)*exp(-(sum(aH(i,:).*((x-pH(i,:)).^2))));

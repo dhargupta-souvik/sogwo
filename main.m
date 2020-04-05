@@ -12,93 +12,80 @@
 % To run GWO: [Best_score,Best_pos,GWO_cg_curve]=GWO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj)
 %__________________________________________
 
-clear all 
-clc
+function [] = main()
 
 SearchAgents_no=50; % Number of search agents
 
-Function_name={'F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12','F13','F14','F15','F16','F17','F18','F19','F20','F21','F22','F23'}; 
+Function_name={'F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12','F13','F14','F15','F16','F17','F18','F19','F20','F21','F22','F23'};
 % Name of the test function that can be from F1 to F23 (Table 1,2,3 in the paper)
 
+iteration = 30; % number of times the algorithm for easch function is run
+
 Max_iteration=1000; % Maximum numbef of iterations
+
+algo_choice = 3; % 1 - PSO, 2 - GWO, 3 - SOGWO
 
 % Load details of the selected benchmark function
 
 
-for x=1:23
+for x=1:size(Function_name,2)
     [lb,ub,dim,fobj]=Get_Functions_details(num2str(cell2mat(Function_name(x))));
     
- 	PSO_cg_curve=PSO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj); % run PSO to compare to results
-     [Best_score,Best_pos,GWO_cg_curve]=GWO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj);
-
-     Best_score=zeros(1,50);
-     Best_score2=zeros(25,1);
-     GWO_cg_curve=zeros(500,50);
-     GWO_cg_curve2=zeros(25,1000);
-
+    best_score=zeros(1,iteration);
+    curve=zeros(iteration,Max_iteration);
     
-    for loop=1:10
-        [Best_score(:,loop),Best_pos,GWO_cg_curve(:,loop)]=GWO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj);
-        [Best_score2(loop),Best_pos2,GWO_cg_curve2(loop,:)]=OGWO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj);
+    
+    for loop=1:iteration
+        switch(algo_choice)
+            case 1
+                [best_score(1,loop), curve(loop,:)] = PSO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj);
+                break;
+            case 2
+                [best_score(1,loop), ~ ,curve(loop,:)] = GWO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj);
+                break;
+            case 3
+                [best_score(loop), ~ ,curve(loop,:)] = SOGWO(SearchAgents_no,Max_iteration,lb,ub,dim,fobj);
+                break;
+        end
+        
     end
-    Best_score=sort(Best_score);
-    Best_score2=sort(Best_score2);
-
-
-    Best_GWO=Best_score(1);
-    Best_OGWO=Best_score2(1);
- 
-    Avg_GWO=mean(Best_score);
-    Avg_OGWO=mean(Best_score2);
- 
-     Std_GWO=std(Best_score);
-     Std_OGWO=std(Best_score2);
- 
-    Avg_GWO_cg_curve=GWO_cg_curve(:,1);
-    Avg_OGWO_cg_curve=GWO_cg_curve2(1,:);
-
-    Avg_GWO=mean(Best_score);
-    Avg_coa=mean(cost);
-
-    Std_GWO=std(Best_score);
-    Std_coa=std(cost);
-
-
-
-     figure('Position',[500 500 660 290])
-     Draw search space
-     subplot(1,2,1);
-     func_plot(num2str(cell2mat(Function_name(1))));
-     title('Parameter space')
-     xlabel('x_1');
-     ylabel('x_2');
-     zlabel([num2str(cell2mat(Function_name(1))),'( x_1 , x_2 )'])
- 
-     %Draw objective space
-     subplot(1,2,2);
-     semilogy(GWO_cg_curve,'Color','r')
-     hold on
-     semilogy(PSO_cg_curve,'Color','b')
-     hold on
-     semilogy(Avg_OGWO_cg_curve,'Color','g')
-     title('Objective space')
-     xlabel('Iteration');
-     ylabel('Best score obtained so far');
- 
-     axis tight
-     grid on
-    box on
-     legend('GWO','PSO','OGWO')
-
-
-
-    fprintf('function name:%s\n',Function_name(x));
-    fprintf('best:%e %e\n',Best_GWO,Best_OGWO);
-    fprintf('avg:%e %e\n',Avg_GWO,Avg_OGWO);
-    fprintf('std:%e  %e\n',Std_GWO,Std_OGWO);
-
-
- 
+    best_score=sort(best_score);
+    
+    avg = mean(best_score);
+    std_dev = std(best_score);
+    
+    fprintf('\n\nfunction name: %s \n',Function_name{x});
+    fprintf('max:%e\n',best_score(1,1));
+    fprintf('min:%e\n',best_score(1,1));
+    fprintf('avg:%e\n',avg);
+    fprintf('std:%e\n',std_dev);
+end
 end
 
+%% call to draw a plot for 3 algorithm results
+function [] = drawComparisonPlot(function_name, curve_list, curve_name_list, curve_color_list)
 
+figure('Position',[500 500 660 290])
+Draw search space
+subplot(1,2,1);
+func_plot(num2str(cell2mat(function_name)));
+title('Parameter space')
+xlabel('x_1');
+ylabel('x_2');
+zlabel([num2str(cell2mat(function_name)),'( x_1 , x_2 )'])
+
+%Draw objective space
+subplot(1,2,2);
+for loop = 1:size(curve_list,1)
+    semilogy(curve_list(:,loop),'Color',curve_color_list(1,loop));
+    hold on;
+end
+title('Objective space')
+xlabel('Iteration');
+ylabel('Best score obtained so far');
+
+axis tight
+grid on
+box on
+legend(curve_name_list)  % chnage this according to your required names
+end
